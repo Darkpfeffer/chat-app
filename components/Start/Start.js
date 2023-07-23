@@ -1,11 +1,11 @@
 //import
-import { 
-    StyleSheet, 
-    View, 
-    Text, 
-    TextInput, 
+import {
+    StyleSheet,
+    View,
+    Text,
+    TextInput,
     ImageBackground,
-    TouchableOpacity 
+    TouchableOpacity
 } from "react-native"
 
 import { useState } from "react"
@@ -20,21 +20,21 @@ export const Start = ({ navigation }) => {
     const [backgroundColor, setBackgroundColor] = useState('#090C08')
 
     return (
-        <View style={styles.container}>
-            <ImageBackground
-                source={BackgroundImage}
-                resizeMode="cover"
-                style={styles.background}
-            >
-                {/* Rendering the title of the View \*/} 
-                <View style={[styles.container, styles.titleContainer]}>
+        <ImageBackground
+            source={BackgroundImage}
+            resizeMode="cover"
+            style={styles.background}
+        >
+            <View style={styles.container}>
+                {/* Rendering the title of the View \*/}
+                <View style={styles.titleContainer}>
                     <Text style={styles.title}>Chat App</Text>
                 </View>
-                {/* Rendering the menu \*/} 
-                <View style={[styles.container, styles.menu]}>
-                    {/* Rendering Textinput \*/} 
+                {/* Rendering the menu \*/}
+                <View style={styles.menu}>
+                    {/* Rendering Textinput \*/}
                     <View style={styles.searchStyle}>
-                        <SVGImg style={styles.imageStyle}/>
+                        <SVGImg style={styles.imageStyle} />
                         <TextInput
                             value={name}
                             onChangeText={setName}
@@ -42,29 +42,29 @@ export const Start = ({ navigation }) => {
                             style={styles.textInput}
                         />
                     </View>
-                    {/* Rendering custom color possibility for chat view \*/} 
+                    {/* Rendering custom color possibility for chat view \*/}
                     <View style={styles.chooseColorContainer}>
-                        <Text style={[styles.textInput ,styles.chooseColor]}>Choose Background Color:</Text>
+                        <Text style={[styles.textInput, styles.chooseColor]}>Choose Background Color:</Text>
                         <View style={styles.colorContainer}>
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={[styles.circle, styles.black]}
-                                onPress={() => {setBackgroundColor('#090C08')}}
+                                onPress={() => { setBackgroundColor('#090C08') }}
                             ></TouchableOpacity>
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={[styles.circle, styles.darkBrown]}
-                                onPress={() => {setBackgroundColor('#474056')}}
+                                onPress={() => { setBackgroundColor('#474056') }}
                             ></TouchableOpacity>
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={[styles.circle, styles.gray]}
-                                onPress={() => {setBackgroundColor('#8A95A5')}}
+                                onPress={() => { setBackgroundColor('#8A95A5') }}
                             ></TouchableOpacity>
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={[styles.circle, styles.green]}
-                                onPress={() => {setBackgroundColor('#B9C6AE')}}
+                                onPress={() => { setBackgroundColor('#B9C6AE') }}
                             ></TouchableOpacity>
                         </View>
                     </View>
-                    {/* Rendering button to navigate to 'chat view' \*/} 
+                    {/* Rendering button to navigate to 'chat view' \*/}
                     <TouchableOpacity
                         onPress={() => navigation.navigate('Chat', { name: name, backgroundColor: backgroundColor })}
                         style={styles.button}
@@ -72,8 +72,8 @@ export const Start = ({ navigation }) => {
                         <Text style={styles.buttonText}>Start Chatting</Text>
                     </TouchableOpacity>
                 </View>
-            </ImageBackground>
-        </View>
+            </View>
+        </ImageBackground>
     )
 }
 
@@ -81,7 +81,7 @@ export const Start = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
     background: {
@@ -100,10 +100,11 @@ const styles = StyleSheet.create({
     menu: {
         backgroundColor: '#fff',
         width: "88%",
+        height: "44%",
         marginLeft: "auto",
         marginRight: "auto",
-        justifyContent: 'start',
-        position: 'fixed',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         marginBottom: '7%'
     },
     searchStyle: {
@@ -112,7 +113,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: "88%",
         marginTop: 15,
-        marginBottom: 45,
         padding: 11,
         borderWidth: 2,
         borderColor: 'rgba(117, 112, 131, 0.5)',
@@ -133,11 +133,7 @@ const styles = StyleSheet.create({
         opacity: 0.5
     },
     chooseColorContainer: {
-        width: '88%',
-        alignSelf: 'flex-start',
-        marginRight: 'auto',
-        marginLeft: 'auto',
-        marginBottom: 45
+        width: '88%'
     },
     chooseColor: {
         opacity: 1
@@ -151,7 +147,8 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         marginTop: 10,
         marginRight: 10,
-        marginLeft: 5
+        marginLeft: 5,
+        marginBottom: 5
     },
     black: {
         backgroundColor: '#090C08'
@@ -167,9 +164,10 @@ const styles = StyleSheet.create({
     },
     button: {
         width: '88%',
-        height: 60,
+        height: 50,
         marginLeft: 'auto',
         marginRight: 'auto',
+        marginBottom: 15,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#757083'
