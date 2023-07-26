@@ -1,37 +1,40 @@
 //Import
+import { addDoc, collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Platform, KeyboardAvoidingView } from "react-native"
-import { GiftedChat, Bubble, Day } from "react-native-gifted-chat";
+import { StyleSheet, View, Text, Platform, KeyboardAvoidingView, Alert } from "react-native"
+import { GiftedChat, Bubble, Day, dayjs } from "react-native-gifted-chat";
 
-export const Chat = ({ route, navigation }) => {
+export const Chat = ({ route, navigation, db }) => {
     //Passing props from 'Start.js'
     const { name } = route.params;
     const { backgroundColor } = route.params
+    const { userID } = route.params
     const dark = ["#090C08", "#474056", "#8A95A5"]
 
     //declare states here
     const [messages, setMessages] = useState([])
 
     useEffect(() => {
-        //Add static messages to "messages" state
-        setMessages([
-            {
-                _id: 1,
-                text: "Hello developer",
-                createAt: new Date(),
-                user: {
-                    _id: 2,
-                    name: "React Native",
-                    avatar: "https://avatarfiles.alphacoders.com/490/thumb-49027.jpg"
-                },
-            },
-            {
-                _id: 2,
-                text: 'This is a system message',
-                createdAt: new Date(),
-                system: true,
-            },
-        ])
+        const unsubMessages = onSnapshot(query(collection(db, "messages")),
+        orderBy("createdAt", "desc"), (documentsSnapshot) => {
+            let message = [];
+            documentsSnapshot.forEach(doc => {
+                message.push({ id: doc.id, ...doc.data()})
+                let lastMessage = message[message.length - 1]
+                let newDate = new Date(lastMessage.createdAt.seconds * 1000 
+                    + lastMessage.createdAt.nanoseconds/1000000)
+                lastMessage.createdAt = newDate;
+            });
+            setMessages(message)
+
+            //Clean up code
+            return () => {
+                if(unsubMessages) unsubMessages()
+            }
+        },
+        (error) => {
+            Alert.alert(`Something gone wrong \n Error:${error}`)
+        })
     }, [])
 
     useEffect(() => {
@@ -128,6 +131,7 @@ export const Chat = ({ route, navigation }) => {
         }
     }
 
+    //Add custom color to message dates
     const renderDay = (props) => {
         if(dark.includes(backgroundColor)) {
             return <Day 
@@ -148,9 +152,7 @@ export const Chat = ({ route, navigation }) => {
 
     //Add new messages to the existing messages
     const onSend = (newMessages) => {
-        setMessages(previousMessages =>
-            GiftedChat.append(previousMessages, newMessages)
-        )
+        addDoc(collection(db, "messages"), newMessages[0])
     }
 
     return (
@@ -163,8 +165,10 @@ export const Chat = ({ route, navigation }) => {
                     onSend={messages => onSend(messages)}
                     renderSystemMessage={renderSystemMessage}
                     renderDay={renderDay}
+                    renderUsernameOnMessage={true}
                     user={{
-                        _id: 1
+                        _id: userID,
+                        name: name
                     }}
                 />
                 {/* Doesn't let keyboard to cover components on the view\*/}
