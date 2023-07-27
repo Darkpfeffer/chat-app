@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 //import Firebase functions
 import { initializeApp } from "firebase/app"
-import { getFirestore } from "firebase/firestore"
+import { getFirestore, initializeFirestore } from "firebase/firestore"
 
 //import components
 import { Start } from './components/Start/Start';
@@ -26,7 +26,9 @@ const App = () => {
   };
   //Initialize Firebase
   const app = initializeApp(firebaseConfig)
-  const db = getFirestore(app)
+  const db = initializeFirestore(app, {
+    experimentalForceLongPolling: true
+  })
 
 
   return (

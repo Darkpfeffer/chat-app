@@ -15,8 +15,10 @@ export const Chat = ({ route, navigation, db }) => {
     const [messages, setMessages] = useState([])
 
     useEffect(() => {
-        const unsubMessages = onSnapshot(query(collection(db, "messages")),
-        orderBy("createdAt", "desc"), (documentsSnapshot) => {
+        /*The code orders the messages by time in descending order, so the most 
+        recent message will be shown in the chat at the bottom */
+        const unsubMessages = onSnapshot(query(collection(db, "messages"),
+        orderBy("createdAt", "desc")), (documentsSnapshot) => {
             let message = [];
             documentsSnapshot.forEach(doc => {
                 message.push({ id: doc.id, ...doc.data()})
