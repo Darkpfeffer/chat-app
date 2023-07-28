@@ -21,6 +21,7 @@ export const Start = ({ navigation, db }) => {
     //default state value is the first color what can be chosen
     const [backgroundColor, setBackgroundColor] = useState('#090C08')
 
+    //Signing the user in anonimously
     const auth = getAuth();
     const AnonymousSignIn = () => {
         signInAnonymously(auth).then(

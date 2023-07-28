@@ -1,10 +1,14 @@
 //Import
 import { addDoc, collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Platform, KeyboardAvoidingView, Alert } from "react-native"
-import { GiftedChat, Bubble, Day, dayjs } from "react-native-gifted-chat";
+import AsyncStorage from "@react-native-async-storage/async-storage"
+//import React Native components
+import { StyleSheet, View, Text, Platform, 
+    KeyboardAvoidingView, Alert, InputAccessoryView } from "react-native"
+//import Gifted Chat components
+import { GiftedChat, Bubble, Day, dayjs, InputToolbar } from "react-native-gifted-chat";
 
-export const Chat = ({ route, navigation, db }) => {
+export const Chat = ({ route, navigation, db, isConnected }) => {
     //Passing props from 'Start.js'
     const { name } = route.params;
     const { backgroundColor } = route.params
@@ -14,35 +18,61 @@ export const Chat = ({ route, navigation, db }) => {
     //declare states here
     const [messages, setMessages] = useState([])
 
-    useEffect(() => {
-        /*The code orders the messages by time in descending order, so the most 
-        recent message will be shown in the chat at the bottom */
-        const unsubMessages = onSnapshot(query(collection(db, "messages"),
-        orderBy("createdAt", "desc")), (documentsSnapshot) => {
-            let message = [];
-            documentsSnapshot.forEach(doc => {
-                message.push({ id: doc.id, ...doc.data()})
-                let lastMessage = message[message.length - 1]
-                let newDate = new Date(lastMessage.createdAt.seconds * 1000 
-                    + lastMessage.createdAt.nanoseconds/1000000)
-                lastMessage.createdAt = newDate;
-            });
-            setMessages(message)
 
-            //Clean up code
-            return () => {
-                if(unsubMessages) unsubMessages()
-            }
-        },
-        (error) => {
-            Alert.alert(`Something gone wrong \n Error:${error}`)
-        })
+    let unsubMessages;
+    useEffect(() => {
+        if (isConnected === true) {
+            /*The code orders the messages by time in descending order, so the most 
+            recent message will be shown in the chat at the bottom */
+            unsubMessages = onSnapshot(query(collection(db, "messages"),
+            orderBy("createdAt", "desc")), (documentsSnapshot) => {
+                let message = [];
+                documentsSnapshot.forEach(doc => {
+                    message.push({ id: doc.id, ...doc.data()})
+                    let lastMessage = message[message.length - 1]
+                    let newDate = new Date(lastMessage.createdAt.seconds * 1000 
+                        + lastMessage.createdAt.nanoseconds/1000000)
+                    lastMessage.createdAt = newDate;
+                });
+                storeMessages(message)
+                setMessages(message)
+    
+                //Clean up code
+                return () => {
+                    if(unsubMessages) unsubMessages()
+                }
+            },
+            (error) => {
+                Alert.alert(`Something gone wrong \n Error:${error}`)
+            })
+        } else {
+            loadCachedMessages();
+        }
     }, [])
 
     useEffect(() => {
         //Setting the title to 'name'
         navigation.setOptions({ title: name })
     }, [])
+
+    //Store messages locally
+    const storeMessages = async (message) => {
+        try {
+            await AsyncStorage.setItem('messages', JSON.stringify(message))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    //Get locally stored messages when device isn't connected to a network
+    const loadCachedMessages = async() => {
+        try{
+            const cachedMessages = await AsyncStorage.getItem("messages") || [];
+            setMessages(JSON.parse(cachedMessages))
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     //Function to set the message bubbles' color
     const renderBubble = (props) => {
@@ -157,6 +187,15 @@ export const Chat = ({ route, navigation, db }) => {
         addDoc(collection(db, "messages"), newMessages[0])
     }
 
+    const renderInputToolbar = (props) => {
+        if (isConnected === true) return <InputToolbar {...props} />;
+        else return (
+            dark.includes(backgroundColor) ? (
+                <Text style={styles.systemTextDark}>No network connection</Text>
+                ) : (<Text style={styles.systemTextLight}>No network connection</Text>)
+        );
+    }
+
     return (
         <>
             {/* Setting the background color to 'backgroundColor' prop\*/}
@@ -168,6 +207,7 @@ export const Chat = ({ route, navigation, db }) => {
                     renderSystemMessage={renderSystemMessage}
                     renderDay={renderDay}
                     renderUsernameOnMessage={true}
+                    renderInputToolbar={renderInputToolbar}
                     user={{
                         _id: userID,
                         name: name
