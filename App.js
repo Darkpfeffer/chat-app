@@ -6,6 +6,7 @@ import { useNetInfo } from "@react-native-community/netinfo"
 import { useEffect } from 'react';
 //import Firebase functions
 import { initializeApp } from "firebase/app"
+import { getStorage } from "firebase/storage"
 import { disableNetwork, enableNetwork, initializeFirestore } from "firebase/firestore"
 //import React Native functions
 import { Alert, StyleSheet } from 'react-native';
@@ -33,6 +34,7 @@ const App = () => {
   const db = initializeFirestore(app, {
     experimentalForceLongPolling: true
   })
+  const storage = getStorage(app);
 
   //Network Connection Status
   const connectionStatus = useNetInfo();
@@ -60,7 +62,8 @@ const App = () => {
           name='Chat'
         >
           {props => <Chat 
-            db={db} 
+            db={db}
+            storage={storage} 
             {...props} 
             isConnected={connectionStatus.isConnected} />}
         </Stack.Screen>

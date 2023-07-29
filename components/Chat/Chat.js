@@ -2,13 +2,17 @@
 import { addDoc, collection, onSnapshot, query, orderBy } from "firebase/firestore";
 import { useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import MapView from "react-native-maps"
 //import React Native components
 import { StyleSheet, View, Text, Platform, 
     KeyboardAvoidingView, Alert, InputAccessoryView } from "react-native"
 //import Gifted Chat components
 import { GiftedChat, Bubble, Day, dayjs, InputToolbar } from "react-native-gifted-chat";
 
-export const Chat = ({ route, navigation, db, isConnected }) => {
+//Import self-made components
+import { CustomActions } from "../CustomActions/CustomActions";
+
+export const Chat = ({ route, navigation, db, isConnected, storage }) => {
     //Passing props from 'Start.js'
     const { name } = route.params;
     const { backgroundColor } = route.params
@@ -187,6 +191,7 @@ export const Chat = ({ route, navigation, db, isConnected }) => {
         addDoc(collection(db, "messages"), newMessages[0])
     }
 
+    //Render and input bar or a text depending on the network status
     const renderInputToolbar = (props) => {
         if (isConnected === true) return <InputToolbar {...props} />;
         else return (
@@ -194,6 +199,33 @@ export const Chat = ({ route, navigation, db, isConnected }) => {
                 <Text style={styles.systemTextDark}>No network connection</Text>
                 ) : (<Text style={styles.systemTextLight}>No network connection</Text>)
         );
+    }
+
+    const renderCustomActions = (props) => {
+        return <CustomActions {...props} storage={storage} />;
+    }
+
+    const renderCustomView = (props) => {
+        const { currentMessage } = props;
+        if (currentMessage.location) {
+            return (
+                <MapView 
+                    style={{ 
+                        width: 150, 
+                        height: 100, 
+                        borderRadius: 13, 
+                        margin: 10
+                    }}
+                    region={{
+                        latitude: currentMessage.location.latitude,
+                        longitude: currentMessage.location.longitude,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    }}
+                />
+            )
+        }
+        return null;
     }
 
     return (
@@ -204,10 +236,12 @@ export const Chat = ({ route, navigation, db, isConnected }) => {
                     messages={messages}
                     renderBubble={renderBubble}
                     onSend={messages => onSend(messages)}
+                    renderActions={renderCustomActions}
                     renderSystemMessage={renderSystemMessage}
                     renderDay={renderDay}
                     renderUsernameOnMessage={true}
                     renderInputToolbar={renderInputToolbar}
+                    renderCustomView={renderCustomView}
                     user={{
                         _id: userID,
                         name: name
