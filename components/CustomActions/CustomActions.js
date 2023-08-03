@@ -46,15 +46,33 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage}) =
 
             if (!result.canceled){
                 const imageURI = result.assets[0].uri;
-                const response = await fetch(imageURI);
-                const blob = response.blob();
                 const newUploadRef = ref(storage, 'message_image')
-                uploadBytes(newUploadRef, blob).then(async(snapshot) => {
+                uploadBytes(newUploadRef, await uriToBlob(imageURI)).then(async(snapshot) => {
                     console.log('File has been uploaded successfully');
                 }).catch((error) => console.log(error))             
             } 
             else Alert.alert("Permissions haven't been granted.")
         }
+    }
+
+    function uriToBlob(uri) {
+        return new Promise(function (resolve, reject) {
+            var xhr = new XMLHttpRequest();
+            // If successful -> return with blob
+            xhr.onload = function () {
+                resolve(xhr.response);
+            };
+            // reject on error
+            xhr.onerror = function () {
+                reject(new Error('uriToBlob failed'));
+            };
+            // Set the response type to 'blob'
+            xhr.responseType = 'blob';
+            // Initialize the request
+            xhr.open('GET', uri, true);
+            // Send the request. The 'null' argument means that no body content is given for the request
+            xhr.send(null);
+        });
     }
 
     const takePhoto = async() => {
