@@ -37,6 +37,7 @@ Note that you’ll need to have these tools to use the app:
 
 Step 1:
 - Clone my repository (Code -> Choose your method to clone)
+
 Step 2:
 - Open the terminal and navigate to the folder of the repository, or open the repository in VS Code and use the terminal there
 * Write ‘npm install -g expo-cli’ in the terminal, press enter, then ‘npm install’ to install all the dependencies the repository has.
@@ -44,6 +45,7 @@ Step 2:
 + To check if you are logged in already, write ‘expo whoami’
 + To run the app, write ‘npm run start’ in the terminal
 + Wait for Metro Bundler to start
+
 Step 3:
 - Download Expo app to your device or emulator
 * Open it, then you will see the project “chat-app”
