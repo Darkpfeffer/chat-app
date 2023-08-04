@@ -202,7 +202,7 @@ export const Chat = ({ route, navigation, db, isConnected, storage }) => {
     }
 
     const renderCustomActions = (props) => {
-        return <CustomActions {...props} storage={storage} />;
+        return <CustomActions {...props} storage={storage} userID={userID} />;
     }
 
     const renderCustomView = (props) => {

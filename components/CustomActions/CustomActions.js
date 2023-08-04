@@ -3,12 +3,12 @@ import { useState } from "react";
 import { useActionSheet } from "@expo/react-native-action-sheet";
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
-import { ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
 //import React Native components
 import { StyleSheet, TouchableOpacity, View, Text, Alert } from "react-native";
 
-export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage}) => {
+export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, userID }) => {
     const [image, setImage] = useState(null)
 
     const actionSheet = useActionSheet();
@@ -16,7 +16,7 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage}) =
     const onActionPress = () => {
         const options = ['Choose from library', 'Take picture', 'Send location',
             'Cancel'];
-        const cancelButtonIndex = options.length -1;
+        const cancelButtonIndex = options.length - 1;
         actionSheet.showActionSheetWithOptions(
             {
                 options,
@@ -38,24 +38,48 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage}) =
         );
     };
 
-    const pickImage = async() => {
+    const pickImage = async () => {
         let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (permissions?.granted) {
             let result = await ImagePicker.launchImageLibraryAsync();
 
-            if (!result.canceled){
+            if (!result.canceled) {
                 const imageURI = result.assets[0].uri;
-                const newUploadRef = ref(storage, 'message_image')
-                uploadBytes(newUploadRef, await uriToBlob(imageURI)).then(async(snapshot) => {
-                    console.log('File has been uploaded successfully');
-                }).catch((error) => console.log(error))             
-            } 
+                await uploadAndSendImage(imageURI)
+            }
             else Alert.alert("Permissions haven't been granted.")
         }
     }
 
-    function uriToBlob(uri) {
+    const takePhoto = async () => {
+        let permissions = await ImagePicker.requestCameraPermissionsAsync();
+
+        if (permissions?.granted) {
+            let result = await ImagePicker.launchCameraAsync();
+
+            if (!result.canceled){
+                let imageURI = result.assets[0].uri
+                await uploadAndSendImage(imageURI)
+            } else {
+                Alert.alert("Permission haven't been granted")
+            }
+        }
+    }
+
+    const uploadAndSendImage = async (imageURI) => {
+        const newUploadRef = ref(storage, generateReference(imageURI));
+        //Upload the image to Firebase storage
+        uploadBytes(newUploadRef, await uriToBlob(imageURI)).then(async (snapshot) => {
+            console.log('File has been uploaded successfully');
+            //Get the URL of the uploaded image
+            const imageURL = await getDownloadURL(snapshot.ref)
+            onSend({ image: imageURL })
+        }).catch((error) => console.log(error))
+    }
+
+    //Fetch an image URI and then blob it (a way to aviod 'fetch()')
+    const uriToBlob = (uri) => {
         return new Promise(function (resolve, reject) {
             var xhr = new XMLHttpRequest();
             // If successful -> return with blob
@@ -75,23 +99,19 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage}) =
         });
     }
 
-    const takePhoto = async() => {
-        let permissions = await ImagePicker.requestCameraPermissionsAsync();
-
-        if(permissions?.granted) {
-            let result = await ImagePicker.launchCameraAsync();
-
-            if(!result.canceled) setImage(result.assets[0]);
-            else setImage(null);
-        }
+    //generate unique image name
+    const generateReference = (uri) => {
+        const timeStamp = (new Date()).getTime();
+        const imageName = uri.split("/")[uri.split("/").length - 1]
+        return `${userID}-${timeStamp}-${imageName}`;
     }
 
-    const getLocation = async() => {
+    const getLocation = async () => {
         let permissions = await Location.requestForegroundPermissionsAsync();
 
-        if(permissions?.granted) {
+        if (permissions?.granted) {
             const location = await Location.getCurrentPositionAsync({});
-            if(location) {
+            if (location) {
                 onSend({
                     location: {
                         longitude: location.coords.longitude,
