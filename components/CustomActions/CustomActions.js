@@ -47,9 +47,11 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, us
             if (!result.canceled) {
                 const imageURI = result.assets[0].uri;
                 await uploadAndSendImage(imageURI)
+            } else {
+                Alert.alert("Action has been canceled.");
             }
-            else Alert.alert("Permissions haven't been granted.")
-        }
+            
+        } else Alert.alert("Permissions haven't been granted.")
     }
 
     const takePhoto = async () => {
@@ -62,8 +64,10 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, us
                 let imageURI = result.assets[0].uri
                 await uploadAndSendImage(imageURI)
             } else {
-                Alert.alert("Permission haven't been granted")
+                Alert.alert("Action has been canceled.")
             }
+        } else {
+            Alert.alert("Permission haven't been granted")
         }
     }
 
