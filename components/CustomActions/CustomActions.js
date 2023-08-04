@@ -131,7 +131,10 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, us
     }
 
     return (
-        <TouchableOpacity style={styles.container} onPress={onActionPress}>
+        <TouchableOpacity 
+            style={styles.container} 
+            onPress={onActionPress}
+        >
             <View style={[styles.wrapper, wrapperStyle]}>
                 <Text style={[styles.iconText, iconTextStyle]}>+</Text>
             </View>
@@ -150,13 +153,13 @@ const styles = StyleSheet.create({
     },
     wrapper: {
         borderRadius: 13,
-        borderColor: '#b2b2b2',
+        borderColor: '#757575',
         borderWidth: 2,
         flex: 1,
         justifyContent: 'center'
     },
     iconText: {
-        color: '#b2b2b2',
+        color: '#757575',
         fontWeight: 'bold',
         fontSize: 10,
         backgroundColor: 'transparent',
