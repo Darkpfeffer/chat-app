@@ -9,12 +9,11 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { StyleSheet, TouchableOpacity, View, Text, Alert } from "react-native";
 
 export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, userID }) => {
-    const [image, setImage] = useState(null)
-
     const actionSheet = useActionSheet();
 
+    //Setting the ActionSheet points
     const onActionPress = () => {
-        const options = ['Choose from library', 'Take picture', 'Send location',
+        const options = ['Choose image from library', 'Take picture', 'Send location',
             'Cancel'];
         const cancelButtonIndex = options.length - 1;
         actionSheet.showActionSheetWithOptions(
@@ -39,6 +38,7 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, us
     };
 
     const pickImage = async () => {
+        //Asking permission from the user
         let permissions = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
         if (permissions?.granted) {
@@ -55,6 +55,7 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, us
     }
 
     const takePhoto = async () => {
+        //Asking permission from the user
         let permissions = await ImagePicker.requestCameraPermissionsAsync();
 
         if (permissions?.granted) {
@@ -111,6 +112,7 @@ export const CustomActions = ({ wrapperStyle, iconTextStyle, onSend, storage, us
     }
 
     const getLocation = async () => {
+        //Asking permission from the user
         let permissions = await Location.requestForegroundPermissionsAsync();
 
         if (permissions?.granted) {

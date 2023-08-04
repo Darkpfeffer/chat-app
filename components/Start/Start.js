@@ -26,7 +26,11 @@ export const Start = ({ navigation, db }) => {
     const AnonymousSignIn = () => {
         signInAnonymously(auth).then(
             result => {
-                navigation.navigate("Chat", { name: name, backgroundColor: backgroundColor, userID: result.user.uid });
+                navigation.navigate("Chat", { 
+                    name: name, 
+                    backgroundColor: backgroundColor, 
+                    userID: result.user.uid 
+                });
                 Alert.alert("Signed in Successfully!");
             }
         ).catch((error) => {
