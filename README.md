@@ -18,15 +18,15 @@ The users of the application have a chat interface, where all users chat with ea
 
 - As a user with a visual impairment, I want to use a chat app that is compatible with a screen reader so that I can engage with a chat interface.
 
-### Tools
+### Tools I used
 - React Native
     * React Native Gifted Chat
 - Developed using Expo
     * Tested with Andriod Studio
 - Database
     * Google Firebase
-    + Firebase Cloud Storage
-    + Firebase Storage
+        + Firebase Cloud Storage
+        + Firebase Storage
 
 ### Setting up the application
 Note that you’ll need to have these tools to use the app:
