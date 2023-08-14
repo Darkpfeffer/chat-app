@@ -25,7 +25,7 @@ The users of the application have a chat interface, where all users chat with ea
     * Tested with Andriod Studio
 - Database
     * Google Firebase
-        + Firebase Cloud Storage
+        + Cloud Firestore
         + Firebase Storage
 
 ### Setting up the application
